@@ -1,93 +1,63 @@
-## 🎓🔥 Intro to Cassandra for Developers using DataStax Astra 🔥🎓
+## 🎓🔥 KillrVideo App - Hands-on com Cassandra🔥🎓
 
-Welcome to the 'Intro to Cassandra for Developers' workshop! In this two-hour workshop, the Developer Advocate team of DataStax shows the most important fundamentals and basics of the powerful distributed NoSQL database Apache Cassandra. Using Astra, the cloud based Cassandra-as-a-Service platform delivered by DataStax, we will cover the very first steps for every developer who wants to try to learn a new database: creating tables and CRUD operations. 
+Este material foi baseado no [DataStax Workshop](https://github.com/datastaxdevs/workshop-intro-to-cassandra) usando o caso de uso da aplicação KillrVideo.
+A descrição do modelo original pode ser encontrado no white paper Data Modeling in Apache Cassandra, [link](https://www.datastax.com/resources/whitepaper/data-modeling-apache-cassandra). 
 
-It doesn't matter if you join our workshop live or you prefer to do at your own pace, we have you covered. In this repository, you'll find everything you need for this workshop:
-
-- Materials used during presentations
-- Hands-on exercises
-- [Workshop video](https://www.youtube.com/watch?v=pVLN6FsUeyo)
-- [Discord chat](https://bit.ly/cassandra-workshop)
-- [Questions and Answers](https://community.datastax.com/)
 
 ## Table of Contents
 
 | Title  | Description
 |---|---|
-| **Slide deck** | [Slide deck for the workshop](slides/Presentation.pdf) |
-| **1. Create your Astra instance** | [Create your Astra instance](#1-create-your-astra-instance) |
-| **2. Create a table** | [Create a table](#2-create-a-table) |
-| **3. Execute CRUD (Create, Read, Update, Delete) operations** | [Execute CRUD operations](#3-execute-crud-operations) |
+| **1. Create a table** | [Create a table](#1-create-a-table) |
+| **2. Execute CRUD (Create, Read, Update, Delete) operations** | [Execute CRUD operations](#2-execute-crud-operations) |
 
 
-## 1. Create your Astra instance
-
-`ASTRA` service is available at url [https://astra.datastax.com](https://dtsx.io/workshop). `ASTRA` is the simplest way to run Cassandra with zero operations at all - just push the button and get your cluster. No credit card required, $25.00 USD credit every month, roughly 5M writes, 30M reads, 40GB storage monthly - sufficient to run small production workloads.
-
-**✅ Step 1a. Register (if needed) and Sign In to Astra** : You can use your `Github`, `Google` accounts or register with an `email`.
-
-Make sure to chose a password with minimum 8 characters, containing upper and lowercase letters, at least one number and special character
-
-- [Registration Page](https://dtsx.io/workshop)
-
-![Registration Image](images/astra-create-register.png?raw=true)
-
-- [Authentication Page](https://dtsx.io/workshop)
-
-![Login Image](images/astra-create-login.png?raw=true)
-
-
-**✅ Step 1b. Create a "pay as you go" plan**
-
-Follow this [guide](https://docs.datastax.com/en/astra/docs/creating-your-astra-database.html) and use the values provided below, to set up a pay as you go database with a free $25 monthly credit.
-
-| Parameter | Value 
-|---|---|
-| Database name | killrvideocluster |
-| Keyspace name | killrvideo |
-
-## 2. Create a table
+## 1. Create a table
 Ok, now that you have a database created the next step is to create a table to work with. 
 
-**✅ Step 2a. Navigate to the CQL Console and login to the database**
+**✅ Step 2a. Start the CQL shell**
 
-In the Summary screen for your database, select **_CQL Console_** from the top menu in the main window. This will take you to the CQL Console and automatically log you in.
-
-
-**✅ Step 2b. Describe keyspaces and USE killrvideo**
-
-Ok, now we're ready to rock. Creating tables is quite easy, but before we create one we need to tell the database which keyspace we are working with.
-
-First, let's **_DESCRIBE_** all of the keyspaces that are in the database. This will give us a list of the available keyspaces.
-
-📘 **Command to execute**
 ```
-desc KEYSPACES;
+cqlsh
 ```
-_"desc" is short for "describe", either is valid_
 
-📗 **Expected output**
+![](images/login-cql-console.png)
 
-<img width="1000" alt="Screenshot 2020-09-30 at 13 54 55" src="https://user-images.githubusercontent.com/20337262/94687725-8cbf8600-0324-11eb-83b0-fbd3d7fbdadc.png">
+**✅ Step 2b. Create a keyspaces and USE killrvideo**
+```
+CREATE KEYSPACE killrvideo WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+```
 
-Depending on your setup you might see a different set of keyspaces then in the image. The one we care about for now is **_killrvideo_**. From here, execute the **_USE_** command with the **_killrvideo_** keyspace to tell the database our context is within **_killrvideo_**.
+**✅ Step 2c. Describe keyspaces and USE killrvideo**
 
-📘 **Command to execute**
+
+
+```
+describe KEYSPACES;
+```
+
+ 
+ 
+
+
+![](images/desc-keyspace.png)
+
+
+
 ```
 use killrvideo;
 ```
 
 📗 **Expected output**
 
-<img width="1000" alt="Screenshot 2020-09-30 at 13 55 56" src="https://user-images.githubusercontent.com/20337262/94687832-b082cc00-0324-11eb-885a-d44e127cf9be.png">
+ ![](images/use-killrvideo.png)
 
-Notice how the prompt displays ```KVUser@cqlsh:killrvideo>``` informing us we are **using** the **_killrvideo_** keyspace. Now we are ready to create our table.
+Notice how the prompt displays ```cqlsh:killrvideo>``` informing us we are **using** the **_killrvideo_** keyspace. Now we are ready to create our table.
 
 **✅ Step 2c. Create the _users_by_city_ table**
 
 At this point we can execute a command to create the **_users_by_city_** table using the information provided during the workshop presenation. Just copy/paste the following command into your CQL console at the prompt.
 
-📘 **Command to execute**
 
 ```
 // Users keyed by city
@@ -100,30 +70,27 @@ CREATE TABLE IF NOT EXISTS users_by_city (
 	PRIMARY KEY ((city), last_name, first_name, email));
 ```
 
+![](images/create-users-by-city.png)
+
 Then **_DESCRIBE_** your keyspace tables to ensure it is there.
 
-📘 **Command to execute**
-
 ```
-desc tables;
+describe tables;
 ```
 
-📗 **Expected output**
 
-<img width="1000" alt="Screenshot 2020-09-30 at 13 57 32" src="https://user-images.githubusercontent.com/20337262/94687995-e88a0f00-0324-11eb-8c7a-08c3dee00eaf.png">
-
-Aaaand **BOOM**, you created a table in your database. That's it. Now, we'll move to the next section in the presentation and break down the method used to create a data model with Apache Cassandra.
-
+![](images/describe-tables.png)
+ 
 [🏠 Back to Table of Contents](#table-of-contents)
 
-## 3. Execute CRUD operations
+## 2. Execute CRUD operations
 CRUD operations stand for create, read, update, and delete. Simply put, they are the basic types of commands you need to work with ANY database in order to maintain data for your applications.
 
 **✅ Step 3a. Create a couple more tables**
 
-We started by creating the **_users_by_city_** table earlier, but now we need to create some tables to support **user** and **video** comments per the **_"Art of Data Modeling"_** section of the presentation. Let's go ahead and do that now. Execute the following statements to create our tables.
+Now we need to create some tables to support **user** and **video** comments.  
 
-📘 **Commands to execute**
+ 
 
 ```
 CREATE TABLE IF NOT EXISTS comments_by_user (
@@ -145,21 +112,21 @@ CREATE TABLE IF NOT EXISTS comments_by_video (
 
 Then **_DESCRIBE_** your keyspace tables to ensure they are both there.
 
-📘 **Command to execute**
+ 
 
 ```
 desc tables;
 ```
 
-📗 **Expected output**
+ 
 
-<img width="1000" alt="Screenshot 2020-09-30 at 13 59 50" src="https://user-images.githubusercontent.com/20337262/94688257-3bfc5d00-0325-11eb-9ec6-40d2596fb71e.png">
+![](images/create-tables.png)
 
 **✅ Step 3b. (C)RUD = create = insert data**
 
 Our tables are in place so let's put some data in them. This is done with the **INSERT** statement. We'll start by inserting data into the **_comments_by_user_** table.
 
-📘 **Commands to execute**
+ 
 
 ```
 // Comment for a given user
@@ -191,7 +158,7 @@ _Note, we are using "fake" generated UUID's in this dataset. If you wanted to ge
 
 Ok, let's **INSERT** more this time using the **_comments_by_video_** table.
 
-📘 **Commands to execute**
+ 
 
 ```
 // Comment for a given video
@@ -236,7 +203,7 @@ The key is to ensure we are **always selecting by some partition key** at a mini
 
 Ok, so with that out of the way let's **READ** the data we _"created"_ earlier with our **INSERT** statements.
 
-📘 **Commands to execute**
+ 
 
 ```
 // Read all data from the comments_by_user table
@@ -245,10 +212,7 @@ SELECT * FROM comments_by_user;
 // Read all data from the comments_by_video table
 SELECT * FROM comments_by_video;
 ```
-
-📗 **Expected output**
-
-<img width="1000" alt="Screenshot 2020-09-30 at 14 03 18" src="https://user-images.githubusercontent.com/20337262/94688606-bb8a2c00-0325-11eb-8124-5c4d9ac0d4fc.png">
+ ![](images/select-from-tables.png)  
 
 Once you execute the above **SELECT** statements you should see something like the expected output above. We have now **READ** the data we **INSERTED** earlier. Awesome job!
 
@@ -297,7 +261,7 @@ _You may remember that I also glossed over the fact we used a hardcoded value fo
 
 We have the information that we need for the update. With that, the command is easy.
 
-📘 **Commands to execute**
+ 
 
 ```
 UPDATE comments_by_video 
@@ -307,9 +271,8 @@ WHERE videoid = 12345678-1234-1111-1111-111111111111 AND commentid = 494a3f00-e9
 SELECT * FROM comments_by_video;
 ```
 
-📗 **Expected output**
-
-<img width="1000" alt="Screenshot 2020-09-30 at 14 05 21" src="https://user-images.githubusercontent.com/20337262/94688803-0015c780-0326-11eb-96e3-b76fb59a9d11.png">
+![](images/update-comments-by-video.png)
+ 
 
 That's it. All that's left now is to **DELETE** some data.
 
@@ -321,7 +284,7 @@ _Generally speaking, it's best to perform as few delete operations as possible o
 
 For our purpose now let's **DELETE** the same row we were working with earlier.
 
-📘 **Commands to execute**
+ 
 
 ```
 DELETE FROM comments_by_video 
@@ -329,21 +292,10 @@ WHERE videoid = 12345678-1234-1111-1111-111111111111 AND commentid = 494a3f00-e9
 
 SELECT * FROM comments_by_video;
 ```
+ 
 
-📗 **Expected output**
-
-<img width="1000" alt="Screenshot 2020-09-30 at 14 07 05" src="https://user-images.githubusercontent.com/20337262/94689019-3eab8200-0326-11eb-86b9-010c130a49c3.png">
+![](images/delete-from-comments-by-video.png)
 
 Notice the row is now removed from the comments_by_video table, it's as simple as that.
 
-## 4. Wrapping up
-We've just scratched the surface of what you can do using DataStax Astra with Apache Cassandra. Go take a look at [DataStax for Developers](https://www.datastax.com/dev) to see what else is possible. There's plenty to dig into!
 
-## Homework
-Complete the following short courses on [DataStax for Developers](https://www.datastax.com/dev) and [submit](https://github.com/DataStax-Academy/Intro-to-Cassandra-for-Developers/issues) a screenshot of your completion for a community badge!
-
-[Cassandra Query Language](https://www.datastax.com/dev/scenario/try-it-out-cassandra-query-language-cql)
-
-[Cassandra Data Modeling](https://www.datastax.com/node/3272)
-
-[Submit Homework](https://github.com/DataStax-Academy/Intro-to-Cassandra-for-Developers/issues)
